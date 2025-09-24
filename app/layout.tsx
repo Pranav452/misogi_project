@@ -8,10 +8,10 @@ import ScrollContext from "../components/scroll-context"
 import "./globals.css"
 
 export const metadata: Metadata = {
-  title: "Student Talent Platform - Discover Exceptional Students",
+  title: "Misogi AI - Discover Exceptional Students",
   description:
-    "A comprehensive platform for recruiters to discover and connect with talented students from top institutions",
-  generator: "v0.app",
+    "A comprehensive platform for recruiters to discover and connect with talented students from Misogi AI",
+  generator: "Pranav Nair",
 }
 
 export default function RootLayout({
