@@ -35,14 +35,14 @@ export function StudentCard({ student }: StudentCardProps) {
 
   return (
     <Card
-      className="group cursor-pointer border border-gray-200 bg-white hover:border-orange-300 hover:shadow-lg h-[360px] flex flex-col"
+      className="group cursor-pointer border border-gray-200 bg-white hover:border-orange-300 hover:shadow-lg h-[320px] sm:h-[360px] flex flex-col"
       onClick={handleCardClick}
     >
-      <CardContent className="p-6 flex flex-col h-full">
-        <div className="flex items-start gap-4 mb-6">
-          <Avatar className="h-16 w-16 ring-2 ring-gray-200 group-hover:ring-orange-300 flex-shrink-0">
+      <CardContent className="p-4 sm:p-6 flex flex-col h-full">
+        <div className="flex items-start gap-3 sm:gap-4 mb-4 sm:mb-6">
+          <Avatar className="h-12 w-12 sm:h-16 sm:w-16 ring-2 ring-gray-200 group-hover:ring-orange-300 flex-shrink-0">
             <AvatarImage src={student.photo_link || "/placeholder.svg"} alt={student.name} />
-            <AvatarFallback className="bg-gray-100 text-gray-700 font-semibold text-lg">
+            <AvatarFallback className="bg-gray-100 text-gray-700 font-semibold text-sm sm:text-lg">
               {student.name
                 .split(" ")
                 .map((n) => n[0])
@@ -51,7 +51,7 @@ export function StudentCard({ student }: StudentCardProps) {
           </Avatar>
 
           <div className="flex-1 min-w-0">
-            <h3 className="font-bold text-lg text-gray-900 group-hover:text-orange-600 mb-1">
+            <h3 className="font-bold text-base sm:text-lg text-gray-900 group-hover:text-orange-600 mb-1 line-clamp-1">
               {student.name}
             </h3>
             {grade && (
@@ -59,10 +59,10 @@ export function StudentCard({ student }: StudentCardProps) {
                 {grade} CGPA
               </Badge>
             )}
-            <p className="text-sm text-gray-600 leading-relaxed">{degree}</p>
-            {institution && <p className="text-xs text-gray-500 mt-1">{institution}</p>}
+            <p className="text-xs sm:text-sm text-gray-600 leading-relaxed line-clamp-2">{degree}</p>
+            {institution && <p className="text-xs text-gray-500 mt-1 line-clamp-1">{institution}</p>}
             {(currentRole || currentCompany) && (
-              <div className="text-xs text-orange-600 font-medium mt-1">
+              <div className="text-xs text-orange-600 font-medium mt-1 line-clamp-1">
                 {currentRole && currentCompany ? (
                   <span>{currentRole} @ {currentCompany}</span>
                 ) : currentCompany ? (
@@ -75,15 +75,15 @@ export function StudentCard({ student }: StudentCardProps) {
           </div>
         </div>
 
-        <div className="flex-1 space-y-3">
-          <div className="border-l-4 border-orange-500 pl-3">
-            <h4 className="text-sm font-semibold text-gray-900 mb-2">Key Skills</h4>
-            <div className="flex flex-wrap gap-2">
+        <div className="flex-1 space-y-2 sm:space-y-3">
+          <div className="border-l-4 border-orange-500 pl-2 sm:pl-3">
+            <h4 className="text-xs sm:text-sm font-semibold text-gray-900 mb-2">Key Skills</h4>
+            <div className="flex flex-wrap gap-1 sm:gap-2">
               {displaySkills.map((skill, index) => (
                 <Badge
                   key={index}
                   variant="outline"
-                  className="text-xs px-2 py-1 bg-gray-50 text-gray-700 border-gray-300 hover:bg-orange-50 hover:text-orange-700 hover:border-orange-300"
+                  className="text-xs px-1.5 sm:px-2 py-0.5 sm:py-1 bg-gray-50 text-gray-700 border-gray-300 hover:bg-orange-50 hover:text-orange-700 hover:border-orange-300"
                 >
                   {skill}
                 </Badge>
@@ -92,8 +92,8 @@ export function StudentCard({ student }: StudentCardProps) {
           </div>
         </div>
 
-        <div className="flex items-center justify-between pt-4 border-t border-gray-100 mt-auto">
-          <div className="flex items-center gap-3">
+        <div className="flex items-center justify-between pt-3 sm:pt-4 border-t border-gray-100 mt-auto">
+          <div className="flex items-center gap-2 sm:gap-3">
             {student.github && <span className="text-xs text-orange-600 font-medium">GitHub</span>}
             {student.deployed && <span className="text-xs text-orange-600 font-medium">Portfolio</span>}
           </div>

@@ -93,17 +93,18 @@ export default function StudentDetailPage() {
   return (
     <div className="min-h-screen bg-white">
       <div ref={headerRef} className="sticky top-0 z-10 bg-white/95 backdrop-blur-sm border-b border-gray-200">
-        <div className="container mx-auto px-6 py-4">
-          <div className="flex items-center justify-between">
+        <div className="container mx-auto px-4 sm:px-6 py-3 sm:py-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <Button
               variant="ghost"
               onClick={() => router.push("/")}
-              className="gap-2 hover:bg-gray-50 text-gray-700 hover:text-gray-900 text-sm font-medium border bg-orange"
+              className="gap-2 hover:bg-gray-50 text-gray-700 hover:text-gray-900 text-sm font-medium border self-start"
             >
               <ArrowLeft className="h-4 w-4" />
-              Back to Candidates
+              <span className="hidden sm:inline">Back to Candidates</span>
+              <span className="sm:hidden">Back</span>
             </Button>
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2 sm:gap-3">
               <div className="group relative">
                 <Button
                   variant="outline"
@@ -113,7 +114,7 @@ export default function StudentDetailPage() {
                   aria-disabled="true"
                 >
                   <Share2 className="h-3 w-3" />
-                  Share
+                  <span className="hidden sm:inline">Share</span>
                 </Button>
                 <div className="absolute left-1/2 -translate-x-1/2 mt-2 w-max px-3 py-1.5 rounded bg-black text-white text-xs opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-20">
                   Coming soon features
@@ -128,7 +129,7 @@ export default function StudentDetailPage() {
                   aria-disabled="true"
                 >
                   <Download className="h-3 w-3" />
-                  Resume
+                  <span className="hidden sm:inline">Resume</span>
                 </Button>
                 <div className="absolute left-1/2 -translate-x-1/2 mt-2 w-max px-3 py-1.5 rounded bg-black text-white text-xs opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-20">
                   Coming soon features
@@ -139,14 +140,14 @@ export default function StudentDetailPage() {
         </div>
       </div>
 
-      <div className="container mx-auto px-6 py-8 max-w-7xl">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          <div ref={sidebarRef} className="lg:col-span-1 space-y-6">
+      <div className="container mx-auto px-4 sm:px-6 py-4 sm:py-6 lg:py-8 max-w-7xl">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
+          <div ref={sidebarRef} className="lg:col-span-1 space-y-4 sm:space-y-6">
             {/* Profile Section */}
-            <div className="bg-white rounded-xl p-6 border border-gray-200 shadow-sm">
-              <div className="text-center space-y-4">
+            <div className="bg-white rounded-xl p-4 sm:p-6 border border-gray-200 shadow-sm">
+              <div className="text-center space-y-3 sm:space-y-4">
                 <div className="relative inline-block">
-                  <Avatar className="h-24 w-24 ring-2 ring-gray-200 shadow-sm">
+                  <Avatar className="h-20 w-20 sm:h-24 sm:w-24 ring-2 ring-gray-200 shadow-sm">
                     <AvatarImage src={student.photo_link || "/placeholder.svg"} alt={student.name} />
                     <AvatarFallback className="bg-gradient-to-br from-gray-100 to-gray-200 text-gray-700 font-semibold text-xl">
                       {student.name
@@ -161,7 +162,7 @@ export default function StudentDetailPage() {
                 </div>
 
                 <div className="space-y-2">
-                  <h1 className="text-xl font-semibold text-gray-900">{student.name}</h1>
+                  <h1 className="text-lg sm:text-xl font-semibold text-gray-900">{student.name}</h1>
                   <p className="text-gray-600 font-medium text-sm">{role || "Software Developer"}</p>
                   {grade && (
                     <Badge className="bg-gray-100 text-gray-700 text-xs px-3 py-1 font-medium">
@@ -203,7 +204,7 @@ export default function StudentDetailPage() {
               </div>
             </div>
 
-            <div className="bg-white rounded-xl p-5 border border-gray-200 shadow-sm">
+            <div className="bg-white rounded-xl p-4 sm:p-5 border border-gray-200 shadow-sm">
               <div className="flex items-center gap-2 mb-4">
                 <div className="h-6 w-6 rounded-md bg-gray-100 flex items-center justify-center">
                   <Zap className="h-3 w-3 text-gray-600" />
@@ -274,7 +275,7 @@ export default function StudentDetailPage() {
               </div>
             </div>
 
-            <div className="bg-white rounded-xl p-5 border border-gray-200 shadow-sm">
+            <div className="bg-white rounded-xl p-4 sm:p-5 border border-gray-200 shadow-sm">
               <h3 className="text-sm font-semibold text-gray-900 mb-3 flex items-center gap-2">
                 <Target className="h-3 w-3 text-gray-600" />
                 Overview
@@ -298,8 +299,8 @@ export default function StudentDetailPage() {
             </div>
           </div>
 
-          <div ref={mainContentRef} className="lg:col-span-2 space-y-8">
-            <section className="bg-white rounded-xl p-6 border border-gray-200 shadow-sm">
+          <div ref={mainContentRef} className="lg:col-span-2 space-y-4 sm:space-y-6 lg:space-y-8">
+            <section className="bg-white rounded-xl p-4 sm:p-6 border border-gray-200 shadow-sm">
               <div className="flex items-center gap-2 mb-4">
                 <div className="h-6 w-6 rounded-md bg-gray-100 flex items-center justify-center">
                   <Rocket className="h-3 w-3 text-gray-600" />
@@ -313,7 +314,7 @@ export default function StudentDetailPage() {
               </div>
             </section>
 
-            <section className="bg-white rounded-xl p-6 border border-gray-200 shadow-sm">
+            <section className="bg-white rounded-xl p-4 sm:p-6 border border-gray-200 shadow-sm">
               <div className="flex items-center gap-2 mb-4">
                 <div className="h-6 w-6 rounded-md bg-gray-100 flex items-center justify-center">
                   <GraduationCap className="h-3 w-3 text-gray-600" />
@@ -362,7 +363,7 @@ export default function StudentDetailPage() {
               </div>
             </section>
 
-            <section className="bg-white rounded-xl p-6 border border-gray-200 shadow-sm">
+            <section className="bg-white rounded-xl p-4 sm:p-6 border border-gray-200 shadow-sm">
               <div className="flex items-center gap-2 mb-4">
                 <div className="h-6 w-6 rounded-md bg-gray-100 flex items-center justify-center">
                   <Briefcase className="h-3 w-3 text-gray-600" />
@@ -421,7 +422,7 @@ export default function StudentDetailPage() {
               </div>
             </section>
 
-            <section className="bg-white rounded-xl p-6 border border-gray-200 shadow-sm">
+            <section className="bg-white rounded-xl p-4 sm:p-6 border border-gray-200 shadow-sm">
               <div className="flex items-center gap-2 mb-4">
                 <div className="h-6 w-6 rounded-md bg-gray-100 flex items-center justify-center">
                   <Code className="h-3 w-3 text-gray-600" />
@@ -429,7 +430,7 @@ export default function StudentDetailPage() {
                 <h2 className="text-base font-semibold text-gray-900">Projects</h2>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                 {student.deployed && (
                   <div className="group bg-gray-50 rounded-lg p-4 border border-gray-200 hover:border-orange-300 transition-all duration-200">
                     <div className="space-y-3">

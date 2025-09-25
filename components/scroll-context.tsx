@@ -42,3 +42,5 @@ export default function ScrollContext({
     </SmoothScrollContext.Provider>
   );
 }
+
+
