@@ -106,10 +106,15 @@ export default function StudentsPage() {
                   className="w-full sm:w-64 lg:w-80 pl-10 border-gray-600 focus:border-orange-500 focus:ring-orange-500 text-white"
                 />
               </div>
-              <button className="px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 font-medium whitespace-nowrap">
+              <a
+                href="https://luma.com/8tegkkq6"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 font-medium whitespace-nowrap"
+              >
                 <Phone className="h-4 w-4 mr-2 inline" />
                 Book a call
-              </button>
+              </a>
             </div>
           </div>
         </div>
