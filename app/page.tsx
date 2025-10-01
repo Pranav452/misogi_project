@@ -107,7 +107,7 @@ export default function StudentsPage() {
                 />
               </div>
               <a
-                href="https://luma.com/8tegkkq6"
+                href="https://calendly.com/amanvats/hire-ai-engineers"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 font-medium whitespace-nowrap"

@@ -189,7 +189,7 @@ export default function StudentDetailPage() {
                     className="w-full bg-orange-500 hover:bg-orange-600 text-white gap-2 text-sm font-medium py-2"
                     asChild
                   >
-                    <a href="https://luma.com/8tegkkq6" target="_blank" rel="noopener noreferrer">
+                    <a href="https://calendly.com/amanvats/hire-ai-engineers" target="_blank" rel="noopener noreferrer">
                       <Calendar className="h-4 w-4" />
                       Schedule Interview
                     </a>
@@ -522,7 +522,7 @@ export default function StudentDetailPage() {
                     className="bg-orange-500 hover:bg-orange-600 text-white gap-2 px-6 py-2 text-sm"
                     asChild
                   >
-                    <a href="https://luma.com/8tegkkq6" target="_blank" rel="noopener noreferrer">
+                    <a href="https://calendly.com/amanvats/hire-ai-engineers" target="_blank" rel="noopener noreferrer">
                       <Calendar className="h-4 w-4" />
                       Schedule Interview
                     </a>
