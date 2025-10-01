@@ -1560,6 +1560,186 @@ export function parseEducationMisal(educationText: string): NormalizedStudent['e
   })
 }
 
+export function parseExperienceArvind(experienceText: string): NormalizedStudent['experience'] {
+  const entries: NormalizedStudent['experience'] = []
+  
+  // Split by double newlines to separate different experience entries
+  const sections = experienceText.split(/\n\n+/)
+  
+  for (const section of sections) {
+    if (!section.trim()) continue
+    
+    const lines = section.split('\n').filter(line => line.trim())
+    const entry: NormalizedStudent['experience'][0] = {
+      role: '',
+      company: '',
+      duration: '',
+      description: []
+    }
+    
+    // Pattern: "TechAeroes Sofware Trainer \nDeveloped curriculum for AI and Programming Languages\nMar 2024 - Jun 2024"
+    if (lines.length >= 3) {
+      const firstLine = lines[0].trim()
+      const secondLine = lines[1].trim()
+      const thirdLine = lines[2].trim()
+      
+      // Extract company and role from first line
+      // Pattern: "TechAeroes Sofware Trainer"
+      const companyRoleMatch = firstLine.match(/^(.+?)\s+(.+)$/)
+      if (companyRoleMatch) {
+        entry.company = companyRoleMatch[1].trim()
+        entry.role = companyRoleMatch[2].trim()
+      } else {
+        // Fallback: treat first line as company/role
+        entry.company = firstLine.trim()
+      }
+      
+      // Second line is description
+      if (secondLine && !secondLine.match(/^[A-Z][a-z]+\s+\d{4}/)) {
+        entry.description.push(secondLine)
+      }
+      
+      // Extract duration from third line
+      const durationMatch = thirdLine.match(/([A-Z][a-z]+\s+\d{4})\s*-\s*([A-Z][a-z]+\s+\d{4})/)
+      if (durationMatch) {
+        entry.duration = `${durationMatch[1]} - ${durationMatch[2]}`
+      }
+    }
+    // Alternative pattern: "Techaeroes - Software Trainer  Mar 2024 - may 2024"
+    else if (lines.length > 0) {
+      const firstLine = lines[0].trim()
+      
+      // Extract company, role, and duration from first line
+      // Pattern: "Company - Role Duration"
+      const companyRoleMatch = firstLine.match(/^(.+?)\s*-\s*(.+?)\s+([A-Z][a-z]+\s+\d{4})\s*-\s*([a-z]+\s+\d{4})$/)
+      if (companyRoleMatch) {
+        entry.company = companyRoleMatch[1].trim()
+        entry.role = companyRoleMatch[2].trim()
+        entry.duration = `${companyRoleMatch[3]} - ${companyRoleMatch[4]}`
+      } else {
+        // Fallback: try with case-insensitive month matching
+        const fallbackMatch = firstLine.match(/^(.+?)\s*-\s*(.+?)\s+([A-Z][a-z]+\s+\d{4})\s*-\s*([A-Z][a-z]+\s+\d{4})$/)
+        if (fallbackMatch) {
+          entry.company = fallbackMatch[1].trim()
+          entry.role = fallbackMatch[2].trim()
+          entry.duration = `${fallbackMatch[3]} - ${fallbackMatch[4]}`
+        } else {
+          // Try simpler pattern
+          const simpleMatch = firstLine.match(/^(.+?)\s*-\s*(.+?)\s+(.+)$/)
+          if (simpleMatch) {
+            entry.company = simpleMatch[1].trim()
+            entry.role = simpleMatch[2].trim()
+            entry.duration = simpleMatch[3].trim()
+          } else {
+            // Last resort: treat as role/company without duration
+            entry.role = firstLine.trim()
+          }
+        }
+      }
+    }
+    
+    // Collect bullet points and other descriptions from remaining lines
+    for (let i = 3; i < lines.length; i++) {
+      const line = lines[i].trim()
+      if (line.startsWith('•')) {
+        entry.description.push(line.replace(/^•\s*/, ''))
+      } else if (line && !line.match(/^[A-Z][a-z]+\s+\d{4}/)) {
+        // Add other non-duration lines as descriptions
+        entry.description.push(line)
+      }
+    }
+    
+    // Only add entry if we have essential information
+    if (entry.role && entry.company) {
+      entries.push(entry)
+    }
+  }
+  
+  return entries
+}
+
+export function parseEducationArvind(educationText: string): NormalizedStudent['education'] {
+  const entries: NormalizedStudent['education'] = []
+  
+  // Split by lines and filter out AI Engineering MisogiAI entries
+  const lines = educationText.split('\n').filter(line => line.trim() && !line.includes('AI Engineering MisogiAI'))
+  
+  for (const line of lines) {
+    const trimmed = line.trim()
+    if (!trimmed) continue
+    
+    const entry: NormalizedStudent['education'][0] = {
+      degree: '',
+      field: '',
+      institution: '',
+      year: '',
+      grade: ''
+    }
+    
+    // Pattern: "Bachelor of Technology in AI and Data Science, VNR Vignana Jyothi Institute of Engineering & Technology, Hyderabad, Dec 2021 - July 2025"
+    const btechMatch = trimmed.match(/^Bachelor\s+of\s+Technology\s+in\s+(.+?),\s*(.+?),\s*([^,]+?),\s*([A-Z][a-z]+\s+\d{4})\s*-\s*([A-Z][a-z]+\s+\d{4})$/)
+    if (btechMatch) {
+      entry.degree = 'Bachelor of Technology'
+      entry.field = btechMatch[1].trim()
+      entry.institution = btechMatch[2].trim()
+      // Location is in btechMatch[3], but we don't store it separately
+      entry.year = `${btechMatch[4]} - ${btechMatch[5]}`
+    } else {
+      // Fallback: try simpler B.Tech patterns
+      const simpleBtechMatch = trimmed.match(/^Bachelor\s+of\s+Technology\s+in\s+(.+?),\s*(.+?),\s*([A-Z][a-z]+\s+\d{4})\s*-\s*([A-Z][a-z]+\s+\d{4})$/)
+      if (simpleBtechMatch) {
+        entry.degree = 'Bachelor of Technology'
+        entry.field = simpleBtechMatch[1].trim()
+        entry.institution = simpleBtechMatch[2].trim()
+        entry.year = `${simpleBtechMatch[3]} - ${simpleBtechMatch[4]}`
+      } else {
+        // Try alternative B.Tech pattern
+        const altBtechMatch = trimmed.match(/^B\.Tech\s+in\s+(.+?),\s*(.+?),\s*([A-Z][a-z]+\s+\d{4})\s*-\s*([A-Z][a-z]+\s+\d{4})$/)
+        if (altBtechMatch) {
+          entry.degree = 'Bachelor of Technology'
+          entry.field = altBtechMatch[1].trim()
+          entry.institution = altBtechMatch[2].trim()
+          entry.year = `${altBtechMatch[3]} - ${altBtechMatch[4]}`
+        }
+      }
+    }
+    
+    // Alternative patterns for other degree types
+    if (!entry.degree) {
+      if (trimmed.includes('B.Tech') || trimmed.includes('Bachelor of Technology')) {
+        entry.degree = 'Bachelor of Technology'
+        
+        // Try to extract field
+        const fieldMatch = trimmed.match(/in\s+(.+?)(?:\s+from|\s*,|\s*$)/i)
+        if (fieldMatch) {
+          entry.field = fieldMatch[1].trim()
+        } else {
+          entry.field = 'Engineering' // Default
+        }
+        
+        // Try to extract institution
+        const institutionMatch = trimmed.match(/(?:from|,)\s*([^,\n]+(?:University|Institute|College|School)[^,\n]*)/i)
+        if (institutionMatch) {
+          entry.institution = institutionMatch[1].trim()
+        }
+        
+        // Extract year if present
+        const yearMatch = trimmed.match(/(\d{4})\s*[-–—]\s*(\d{4})/)
+        if (yearMatch) {
+          entry.year = `${yearMatch[1]}-${yearMatch[2]}`
+        }
+      }
+    }
+    
+    // Only add entry if we have essential information
+    if (entry.degree && (entry.field || entry.institution)) {
+      entries.push(entry)
+    }
+  }
+  
+  return entries
+}
+
 // Generic fallback parser
 export function parseEducationGeneric(educationText: string): NormalizedStudent['education'] {
   const entries: NormalizedStudent['education'] = []
@@ -1702,6 +1882,8 @@ export function normalizeEducationByStudent(educationText: string, studentName: 
     return parseEducationAmol(educationText)
   } else if (name.includes('misal')) {
     return parseEducationMisal(educationText)
+  } else if (name.includes('arvind')) {
+    return parseEducationArvind(educationText)
   } else {
     return parseEducationGeneric(educationText)
   }
@@ -1740,6 +1922,8 @@ export function normalizeExperienceByStudent(experienceText: string, studentName
     return parseExperienceAbhijeet(experienceText)
   } else if (name.includes('misal')) {
     return parseExperienceMisal(experienceText)
+  } else if (name.includes('arvind')) {
+    return parseExperienceArvind(experienceText)
   } else {
     return parseExperienceGeneric(experienceText)
   }
