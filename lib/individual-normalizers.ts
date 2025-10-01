@@ -416,46 +416,6 @@ export function parseExperienceMohammad(experienceText: string): NormalizedStude
   return entries
 }
 
-export function parseExperienceHarishankar(experienceText: string): NormalizedStudent['experience'] {
-  const entries: NormalizedStudent['experience'] = []
-  const sections = experienceText.split(/\n\n+/)
-  
-  for (const section of sections) {
-    if (!section.trim()) continue
-    
-    const lines = section.split('\n').filter(line => line.trim())
-    const entry: NormalizedStudent['experience'][0] = {
-      role: '',
-      company: '',
-      duration: '',
-      description: []
-    }
-    
-    if (lines.length >= 2) {
-      const firstLine = lines[0].trim()
-      const secondLine = lines[1].trim()
-      
-      // Pattern: "Deccan AI Mar 2024 – Apr 2025"
-      // Extract company and duration from first line
-      const companyDurationMatch = firstLine.match(/^(.+?)\s+([A-Z][a-z]+\s+\d{4}\s*[–—-]\s*[A-Z][a-z]+\s+\d{4})$/)
-      if (companyDurationMatch) {
-        entry.company = companyDurationMatch[1].trim()
-        entry.duration = companyDurationMatch[2].trim()
-        entry.role = secondLine
-      } else {
-        // Fallback: treat first line as company, second as role
-        entry.company = firstLine
-        entry.role = secondLine
-      }
-    }
-    
-    if (entry.company && entry.role) {
-      entries.push(entry)
-    }
-  }
-  
-  return entries
-}
 
 export function parseExperienceLakshya(experienceText: string): NormalizedStudent['experience'] {
   const entries: NormalizedStudent['experience'] = []
@@ -848,6 +808,515 @@ export function parseEducationSachin(educationText: string): NormalizedStudent['
   })
 }
 
+export function parseExperienceLokesh(experienceText: string): NormalizedStudent['experience'] {
+  const entries: NormalizedStudent['experience'] = []
+  
+  // Split by double newlines to separate different experience entries
+  const sections = experienceText.split(/\n\n+/)
+  
+  for (const section of sections) {
+    if (!section.trim()) continue
+    
+    const lines = section.split('\n').filter(line => line.trim())
+    const entry: NormalizedStudent['experience'][0] = {
+      role: '',
+      company: '',
+      duration: '',
+      description: []
+    }
+    
+    // Pattern: "Full Stack Development Intern ~ BrainoVision"
+    if (lines.length > 0) {
+      const firstLine = lines[0].trim()
+      
+      // Extract role and company from first line
+      // Pattern: "Role ~ Company"
+      const roleCompanyMatch = firstLine.match(/^(.+?)\s*~\s*(.+)$/)
+      if (roleCompanyMatch) {
+        entry.role = roleCompanyMatch[1].trim()
+        entry.company = roleCompanyMatch[2].trim()
+      } else {
+        // Fallback: treat entire first line as role if no company separator found
+        entry.role = firstLine
+      }
+    }
+    
+    // Collect bullet points as descriptions
+    for (let i = 1; i < lines.length; i++) {
+      const line = lines[i].trim()
+      if (line.startsWith('•')) {
+        entry.description.push(line.replace(/^•\s*/, ''))
+      } else if (line && !line.match(/^[A-Z][a-z]+,\s*[A-Z]/)) {
+        // Add non-role/company lines as descriptions
+        entry.description.push(line)
+      }
+    }
+    
+    // Only add entry if we have essential information
+    if (entry.role && entry.company) {
+      entries.push(entry)
+    }
+  }
+  
+  return entries
+}
+
+export function parseEducationLokesh(educationText: string): NormalizedStudent['education'] {
+  const entries: NormalizedStudent['education'] = []
+  const lines = educationText.split('\n').filter(line => line.trim() && !line.includes('AI Engineering MisogiAI'))
+  
+  for (const line of lines) {
+    const trimmed = line.trim()
+    if (!trimmed) continue
+    
+    const entry: NormalizedStudent['education'][0] = {
+      degree: '',
+      field: '',
+      institution: '',
+      year: '',
+      grade: ''
+    }
+    
+    // Pattern: "Vasireddy Venkatadri Institute of Technology B.Tech in Computer Science Engineering (AI/ML)"
+    const universityMatch = trimmed.match(/^([^B]+?)\s+B\.Tech\s+in\s+(.+?)(?:\s+\d{4}|\s*$)/i)
+    if (universityMatch) {
+      entry.institution = universityMatch[1].trim()
+      const field = universityMatch[2].trim()
+      
+      // Extract degree and field
+      entry.degree = 'Bachelor of Technology'
+      
+      // Clean up field name
+      if (field.includes('(') && field.includes(')')) {
+        const fieldMatch = field.match(/^(.+?)\s*\((.+?)\)$/)
+        if (fieldMatch) {
+          entry.field = `${fieldMatch[1].trim()} (${fieldMatch[2].trim()})`
+        } else {
+          entry.field = field
+        }
+      } else {
+        entry.field = field
+      }
+      
+      // Extract year if present
+      const yearMatch = trimmed.match(/(\d{4})\s*[-–—]\s*(\d{4})/)
+      if (yearMatch) {
+        entry.year = `${yearMatch[1]}-${yearMatch[2]}`
+      }
+    }
+    
+    if (entry.degree && entry.institution) {
+      entries.push(entry)
+    }
+  }
+  
+  return entries
+}
+
+export function parseSkillsLokesh(skillsText: string): NormalizedStudent['skills'] {
+  const skillsCategories: NormalizedStudent['skills'] = []
+  
+  // Split by lines and process each category
+  const lines = skillsText.split('\n').filter(line => line.trim())
+  
+  for (const line of lines) {
+    if (!line.trim()) continue
+    
+    // Pattern: "Gen AI — AI Agents, n8n, LangChain, LangGraph, CrewAI"
+    const categoryMatch = line.match(/^(.+?)\s*—\s*(.+)$/)
+    if (categoryMatch) {
+      const category = categoryMatch[1].trim()
+      const skillsString = categoryMatch[2].trim()
+      
+      // Split skills by comma and clean them
+      const skills = skillsString.split(',')
+        .map(skill => skill.trim())
+        .filter(skill => skill.length > 0)
+        .map(skill => {
+          // Remove trailing periods and clean up
+          skill = skill.replace(/[,;.]+$/, '')
+          skill = skill.trim()
+          
+          // Handle special cases and normalize
+          if (skill.toLowerCase().includes('ai agents')) {
+            return 'AI Agents'
+          } else if (skill.toLowerCase().includes('n8n')) {
+            return 'n8n'
+          } else if (skill.toLowerCase().includes('langchain')) {
+            return 'LangChain'
+          } else if (skill.toLowerCase().includes('langgraph')) {
+            return 'LangGraph'
+          } else if (skill.toLowerCase().includes('crewai')) {
+            return 'CrewAI'
+          } else if (skill.toLowerCase().includes('rag')) {
+            return 'RAG'
+          } else if (skill.toLowerCase().includes('transformers')) {
+            return 'Transformers'
+          } else if (skill.toLowerCase().includes('unsloth')) {
+            return 'Unsloth'
+          } else if (skill.toLowerCase().includes('machine learning')) {
+            return 'Machine Learning'
+          } else if (skill.toLowerCase().includes('supervised')) {
+            return 'Supervised Learning'
+          } else if (skill.toLowerCase().includes('unsupervised')) {
+            return 'Unsupervised Learning'
+          } else if (skill.toLowerCase().includes('deep learning')) {
+            return 'Deep Learning'
+          } else if (skill.toLowerCase().includes('data structures')) {
+            return 'Data Structures'
+          } else if (skill.toLowerCase().includes('algorithms')) {
+            return 'Algorithms'
+          } else if (skill.toLowerCase().includes('tcp/ip')) {
+            return 'TCP/IP'
+          } else if (skill.toLowerCase().includes('networking')) {
+            return 'Computer Networks'
+          } else if (skill.toLowerCase().includes('operating systems')) {
+            return 'Operating Systems'
+          } else if (skill.toLowerCase().includes('oop')) {
+            return 'Object-Oriented Programming'
+          } else if (skill.toLowerCase().includes('mysql')) {
+            return 'MySQL'
+          } else if (skill.toLowerCase().includes('sql')) {
+            return 'SQL'
+          } else if (skill.toLowerCase().includes('redis')) {
+            return 'Redis'
+          } else if (skill.toLowerCase().includes('graphdb')) {
+            return 'GraphDB'
+          } else if (skill.toLowerCase().includes('python')) {
+            return 'Python'
+          } else if (skill.toLowerCase().includes('react')) {
+            return 'React'
+          } else if (skill.toLowerCase().includes('fastapi')) {
+            return 'FastAPI'
+          } else if (skill.toLowerCase().includes('pydantic')) {
+            return 'Pydantic'
+          } else if (skill.toLowerCase().includes('streamlit')) {
+            return 'Streamlit'
+          } else if (skill.toLowerCase().includes('docker')) {
+            return 'Docker'
+          } else if (skill.toLowerCase().includes('aws')) {
+            return 'AWS'
+          }
+          
+          return skill
+        })
+        .filter(skill => skill.length > 0)
+      
+      if (skills.length > 0) {
+        skillsCategories.push({
+          category: category,
+          items: skills
+        })
+      }
+    }
+  }
+  
+  return skillsCategories
+}
+
+export function parseExperienceHarishankar(experienceText: string): NormalizedStudent['experience'] {
+  const entries: NormalizedStudent['experience'] = []
+  
+  // Split by double newlines to separate different experience entries
+  const sections = experienceText.split(/\n\n+/)
+  
+  for (const section of sections) {
+    if (!section.trim()) continue
+    
+    const lines = section.split('\n').filter(line => line.trim())
+    const entry: NormalizedStudent['experience'][0] = {
+      role: '',
+      company: '',
+      duration: '',
+      description: []
+    }
+    
+    // Pattern: "Deccan AI Mar 2024 – Apr 2025\nAI Prompt Engineer Freelance"
+    if (lines.length >= 2) {
+      const firstLine = lines[0].trim()
+      const secondLine = lines[1].trim()
+      
+      // Extract company and duration from first line
+      // Pattern: "Company Mar 2024 – Apr 2025"
+      const companyDurationMatch = firstLine.match(/^(.+?)\s+([A-Z][a-z]+\s+\d{4})\s*[–—]\s*([A-Z][a-z]+\s+\d{4})$/)
+      if (companyDurationMatch) {
+        entry.company = companyDurationMatch[1].trim()
+        entry.duration = `${companyDurationMatch[2]} - ${companyDurationMatch[3]}`
+        
+        // Extract role and location from second line
+        // Pattern: "Role Location" or just "Role"
+        const roleLocationMatch = secondLine.match(/^(.+?)\s+(.+)$/)
+        if (roleLocationMatch) {
+          entry.role = roleLocationMatch[1].trim()
+          // Location is in roleLocationMatch[2], but we don't store it separately
+        } else {
+          entry.role = secondLine.trim()
+        }
+      } else {
+        // Fallback: try to extract from second line if first line doesn't match
+        // Pattern: "Qubrid AI Jul 2023 – Jan 2024\nQuantum Researcher & Developer Remote, India"
+        const companyMatch = firstLine.match(/^(.+?)\s+([A-Z][a-z]+\s+\d{4})\s*[–—]\s*([A-Z][a-z]+\s+\d{4})$/)
+        if (companyMatch) {
+          entry.company = companyMatch[1].trim()
+          entry.duration = `${companyMatch[2]} - ${companyMatch[3]}`
+          
+          // Extract role from second line
+          const roleMatch = secondLine.match(/^(.+?)(?:\s+Remote,\s*India|\s+Freelance|$)/)
+          if (roleMatch) {
+            entry.role = roleMatch[1].trim()
+          } else {
+            entry.role = secondLine.trim()
+          }
+        } else {
+          // Last resort: treat first line as company, second as role
+          entry.company = firstLine.trim()
+          entry.role = secondLine.trim()
+        }
+      }
+    }
+    
+    // Collect bullet points from remaining lines
+    for (let i = 2; i < lines.length; i++) {
+      const line = lines[i].trim()
+      if (line.startsWith('•')) {
+        entry.description.push(line.replace(/^•\s*/, ''))
+      } else if (line && !line.match(/^[A-Z][a-z]+\s+\d{4}/) && !line.match(/^[A-Z][a-z]+,\s*[A-Z][a-z]+$/)) {
+        entry.description.push(line)
+      }
+    }
+    
+    // Only add entry if we have essential information
+    if (entry.role && entry.company) {
+      entries.push(entry)
+    }
+  }
+  
+  return entries
+}
+
+export function parseEducationHarishankar(educationText: string): NormalizedStudent['education'] {
+  const entries: NormalizedStudent['education'] = []
+  const lines = educationText.split('\n').filter(line => line.trim() && !line.includes('AI Engineering MisogiAI'))
+  
+  for (const line of lines) {
+    const trimmed = line.trim()
+    if (!trimmed) continue
+    
+    const entry: NormalizedStudent['education'][0] = {
+      degree: '',
+      field: '',
+      institution: '',
+      year: '',
+      grade: ''
+    }
+    
+    // Pattern: "B.Tech Computer Science Engineering, SRM IST, Chennai"
+    const universityMatch = trimmed.match(/^B\.Tech\s+(.+?),\s*([^,]+),\s*(.+)$/i)
+    if (universityMatch) {
+      entry.degree = 'Bachelor of Technology'
+      entry.field = universityMatch[1].trim()
+      entry.institution = universityMatch[2].trim()
+      // Location is in the third group but we don't store it separately
+    } else {
+      // Fallback: try to extract basic B.Tech info
+      const btechMatch = trimmed.match(/^B\.Tech\s+(.+?)(?:\s+from|\s*,|\s*$)/i)
+      if (btechMatch) {
+        entry.degree = 'Bachelor of Technology'
+        entry.field = btechMatch[1].trim()
+        
+        // Try to extract institution
+        const institutionMatch = trimmed.match(/(?:from|,)\s*([^,\n]+?)(?:\s*,\s*[A-Z][a-z]+|\s*$)/i)
+        if (institutionMatch) {
+          entry.institution = institutionMatch[1].trim()
+        }
+      }
+    }
+    
+    // Extract year if present
+    const yearMatch = trimmed.match(/(\d{4})\s*[-–—]\s*(\d{4})/)
+    if (yearMatch) {
+      entry.year = `${yearMatch[1]}-${yearMatch[2]}`
+    }
+    
+    if (entry.degree && entry.institution) {
+      entries.push(entry)
+    }
+  }
+  
+  return entries
+}
+
+export function parseExperienceAmol(experienceText: string): NormalizedStudent['experience'] {
+  const entries: NormalizedStudent['experience'] = []
+  
+  // Split by double newlines to separate different experience entries
+  const sections = experienceText.split(/\n\n+/)
+  
+  for (const section of sections) {
+    if (!section.trim()) continue
+    
+    const lines = section.split('\n').filter(line => line.trim())
+    const entry: NormalizedStudent['experience'][0] = {
+      role: '',
+      company: '',
+      duration: '',
+      description: []
+    }
+    
+    // Pattern: "Frontend Developer, Gameopedia Data Solutions Pvt. Ltd. (Mar 2022– Mar 2025)"
+    if (lines.length > 0) {
+      const firstLine = lines[0].trim()
+      
+      // Extract role, company, and duration from first line
+      // Pattern: "Role, Company (Duration)"
+      const roleCompanyMatch = firstLine.match(/^([^,]+),\s*(.+?)\s*\(([^)]+)\)$/)
+      if (roleCompanyMatch) {
+        entry.role = roleCompanyMatch[1].trim()
+        entry.company = roleCompanyMatch[2].trim()
+        entry.duration = roleCompanyMatch[3].trim()
+      } else {
+        // Fallback: try simpler patterns
+        const simpleMatch = firstLine.match(/^(.+?),\s*(.+?)\s*\((.+)\)$/)
+        if (simpleMatch) {
+          entry.role = simpleMatch[1].trim()
+          entry.company = simpleMatch[2].trim()
+          entry.duration = simpleMatch[3].trim()
+        } else {
+          // If no parentheses found, treat as role/company without duration
+          const roleCompanySimple = firstLine.match(/^(.+?),\s*(.+)$/)
+          if (roleCompanySimple) {
+            entry.role = roleCompanySimple[1].trim()
+            entry.company = roleCompanySimple[2].trim()
+          } else {
+            entry.role = firstLine.trim()
+          }
+        }
+      }
+    }
+    
+    // Collect bullet points as descriptions
+    for (let i = 1; i < lines.length; i++) {
+      const line = lines[i].trim()
+      if (line.startsWith('•')) {
+        entry.description.push(line.replace(/^•\s*/, ''))
+      } else if (line && !line.match(/^[A-Z][a-z]+,\s*[A-Z]/)) {
+        // Add non-role/company lines as descriptions
+        entry.description.push(line)
+      }
+    }
+    
+    // Only add entry if we have essential information
+    if (entry.role && entry.company) {
+      entries.push(entry)
+    }
+  }
+  
+  return entries
+}
+
+export function parseEducationAmol(educationText: string): NormalizedStudent['education'] {
+  const entries: NormalizedStudent['education'] = []
+  
+  // Split by lines and filter out AI Engineering MisogiAI entries
+  const lines = educationText.split('\n').filter(line => line.trim() && !line.includes('AI Engineering MisogiAI'))
+  
+  for (const line of lines) {
+    const trimmed = line.trim()
+    if (!trimmed) continue
+    
+    const entry: NormalizedStudent['education'][0] = {
+      degree: '',
+      field: '',
+      institution: '',
+      year: '',
+      grade: ''
+    }
+    
+    // Pattern: "Bachelor Of Engineering in Electrical"
+    const engineeringMatch = trimmed.match(/^Bachelor\s+Of\s+Engineering\s+in\s+(.+)$/i)
+    if (engineeringMatch) {
+      entry.degree = 'Bachelor of Engineering'
+      entry.field = engineeringMatch[1].trim()
+      
+      // Try to extract institution if present (look for "from" or comma)
+      const institutionMatch = trimmed.match(/(?:from|,)\s*([^,\n]+(?:University|Institute|College|School|University)[^,\n]*)/i)
+      if (institutionMatch) {
+        entry.institution = institutionMatch[1].trim()
+      }
+      
+      // Extract year if present
+      const yearMatch = trimmed.match(/(\d{4})\s*[-–—]\s*(\d{4})/)
+      if (yearMatch) {
+        entry.year = `${yearMatch[1]}-${yearMatch[2]}`
+      }
+    }
+    // Alternative pattern for B.E variations
+    else if (trimmed.includes('B.E') || trimmed.includes('Bachelor of Engineering') || trimmed.includes('Bachelor Of Engineering')) {
+      entry.degree = 'Bachelor of Engineering'
+      
+      // Try to extract field
+      const fieldMatch = trimmed.match(/(?:in|of)\s+(.+?)(?:\s+from|\s*,|\s*$)/i)
+      if (fieldMatch) {
+        entry.field = fieldMatch[1].trim()
+      } else {
+        entry.field = 'Engineering' // Default
+      }
+      
+      // Try to extract institution
+      const institutionMatch = trimmed.match(/(?:from|,)\s*([^,\n]+(?:University|Institute|College|School)[^,\n]*)/i)
+      if (institutionMatch) {
+        entry.institution = institutionMatch[1].trim()
+      }
+      
+      // Extract year if present
+      const yearMatch = trimmed.match(/(\d{4})\s*[-–—]\s*(\d{4})/)
+      if (yearMatch) {
+        entry.year = `${yearMatch[1]}-${yearMatch[2]}`
+      }
+    }
+    // Handle cases where the degree might be on a line by itself
+    else if (trimmed.match(/^Bachelor\s+Of\s+Engineering/i)) {
+      entry.degree = 'Bachelor of Engineering'
+      entry.field = 'Electrical' // Default field based on the data provided
+    }
+    
+    // Only add entry if we have at least a degree
+    if (entry.degree) {
+      entries.push(entry)
+    }
+  }
+  
+  // If no entries found, try a more flexible approach
+  if (entries.length === 0) {
+    const allLines = educationText.split('\n').filter(line => line.trim())
+    for (const line of allLines) {
+      const trimmed = line.trim()
+      
+      // Look for any B.E or Bachelor of Engineering reference
+      if (trimmed.match(/Bachelor.*Engineering/i) && !trimmed.includes('AI Engineering MisogiAI')) {
+        const entry: NormalizedStudent['education'][0] = {
+          degree: 'Bachelor of Engineering',
+          field: 'Electrical',
+          institution: '',
+          year: '',
+          grade: ''
+        }
+        
+        // Try to extract field
+        const fieldMatch = trimmed.match(/in\s+(\w+)/i)
+        if (fieldMatch) {
+          entry.field = fieldMatch[1].trim()
+        }
+        
+        entries.push(entry)
+        break // Only add one entry
+      }
+    }
+  }
+  
+  return entries
+}
+
 // Generic fallback parser
 export function parseEducationGeneric(educationText: string): NormalizedStudent['education'] {
   const entries: NormalizedStudent['education'] = []
@@ -982,6 +1451,12 @@ export function normalizeEducationByStudent(educationText: string, studentName: 
     return parseEducationMayank(educationText)
   } else if (name.includes('sachin')) {
     return parseEducationSachin(educationText)
+  } else if (name.includes('lokesh') || name.includes('venkata')) {
+    return parseEducationLokesh(educationText)
+  } else if (name.includes('harishankar')) {
+    return parseEducationHarishankar(educationText)
+  } else if (name.includes('amol')) {
+    return parseEducationAmol(educationText)
   } else {
     return parseEducationGeneric(educationText)
   }
@@ -1012,6 +1487,10 @@ export function normalizeExperienceByStudent(experienceText: string, studentName
     return parseExperienceAkash(experienceText)
   } else if (name.includes('sachin')) {
     return parseExperienceSachin(experienceText)
+  } else if (name.includes('lokesh') || name.includes('venkata')) {
+    return parseExperienceLokesh(experienceText)
+  } else if (name.includes('amol')) {
+    return parseExperienceAmol(experienceText)
   } else {
     return parseExperienceGeneric(experienceText)
   }
@@ -1022,6 +1501,8 @@ export function normalizeSkillsByStudent(skillsText: string, studentName: string
   
   if (name.includes('akash')) {
     return parseSkillsAkash(skillsText)
+  } else if (name.includes('lokesh') || name.includes('venkata')) {
+    return parseSkillsLokesh(skillsText)
   } else {
     // For now, use the generic skills parser for other students
     // This can be expanded later with other specific parsers
