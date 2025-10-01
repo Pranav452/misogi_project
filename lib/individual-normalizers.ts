@@ -1390,6 +1390,176 @@ export function parseExperienceAbhijeet(experienceText: string): NormalizedStude
   return entries
 }
 
+export function parseExperienceMisal(experienceText: string): NormalizedStudent['experience'] {
+  const entries: NormalizedStudent['experience'] = []
+  
+  // Split by double newlines to separate different experience entries
+  const sections = experienceText.split(/\n\n+/)
+  
+  for (const section of sections) {
+    if (!section.trim()) continue
+    
+    const lines = section.split('\n').filter(line => line.trim())
+    const entry: NormalizedStudent['experience'][0] = {
+      role: '',
+      company: '',
+      duration: '',
+      description: []
+    }
+    
+    // Pattern: "PhdTech Software – Software Developer (Remote)\nFeb 2023 – Jul 2025"
+    if (lines.length >= 2) {
+      const firstLine = lines[0].trim()
+      const secondLine = lines[1].trim()
+      
+      // Extract company and role from first line
+      // Pattern: "Company – Role (Location)"
+      const companyRoleMatch = firstLine.match(/^(.+?)\s*–\s*(.+?)\s*\((.+?)\)$/)
+      if (companyRoleMatch) {
+        entry.company = companyRoleMatch[1].trim()
+        entry.role = companyRoleMatch[2].trim()
+        // Location is in companyRoleMatch[3], but we don't store it separately
+      } else {
+        // Fallback: try without parentheses
+        const simpleMatch = firstLine.match(/^(.+?)\s*–\s*(.+)$/)
+        if (simpleMatch) {
+          entry.company = simpleMatch[1].trim()
+          entry.role = simpleMatch[2].trim()
+        } else {
+          // Last resort: treat first line as company/role
+          entry.company = firstLine.trim()
+        }
+      }
+      
+      // Extract duration from second line
+      const durationMatch = secondLine.match(/([A-Z][a-z]+\s+\d{4})\s*[–—]\s*([A-Z][a-z]+\s+\d{4})/)
+      if (durationMatch) {
+        entry.duration = `${durationMatch[1]} - ${durationMatch[2]}`
+      }
+    }
+    // Alternative pattern for single line entries
+    else if (lines.length === 1) {
+      const line = lines[0].trim()
+      
+      // Try to extract company, role, and duration from single line
+      const fullMatch = line.match(/^(.+?)\s*–\s*(.+?)\s+([A-Z][a-z]+\s+\d{4})\s*[–—]\s*([A-Z][a-z]+\s+\d{4})$/)
+      if (fullMatch) {
+        entry.company = fullMatch[1].trim()
+        entry.role = fullMatch[2].trim()
+        entry.duration = `${fullMatch[3]} - ${fullMatch[4]}`
+      }
+    }
+    
+    // Collect bullet points as descriptions
+    for (let i = 2; i < lines.length; i++) {
+      const line = lines[i].trim()
+      if (line && !line.match(/^[A-Z][a-z]+\s+\d{4}/)) {
+        entry.description.push(line)
+      }
+    }
+    
+    // Only add entry if we have essential information
+    if (entry.role && entry.company) {
+      entries.push(entry)
+    }
+  }
+  
+  return entries
+}
+
+export function parseEducationMisal(educationText: string): NormalizedStudent['education'] {
+  const entries: NormalizedStudent['education'] = []
+  
+  // Split by lines and filter out AI Engineering MisogiAI entries
+  const lines = educationText.split('\n').filter(line => line.trim() && !line.includes('AI Engineering MisogiAI'))
+  
+  for (const line of lines) {
+    const trimmed = line.trim()
+    if (!trimmed) continue
+    
+    const entry: NormalizedStudent['education'][0] = {
+      degree: '',
+      field: '',
+      institution: '',
+      year: '',
+      grade: ''
+    }
+    
+    // Pattern: "TimesPro Post Graduate Diploma in Banking Management New Delhi Feb 2017 – Jul 2017"
+    const diplomaMatch = trimmed.match(/^(.+?)\s+Post\s+Graduate\s+Diploma\s+in\s+(.+?)\s+([^,]+?)\s+([A-Z][a-z]+\s+\d{4})\s*[–—]\s*([A-Z][a-z]+\s+\d{4})$/)
+    if (diplomaMatch) {
+      entry.institution = diplomaMatch[1].trim()
+      entry.degree = 'Post Graduate Diploma'
+      entry.field = diplomaMatch[2].trim()
+      // Location is in diplomaMatch[3], but we don't store it separately
+      entry.year = `${diplomaMatch[4]} - ${diplomaMatch[5]}`
+    }
+    // Pattern: "Central Board of Irrigation and Power – PG Diploma in Thermal Power Plant Engineering New Delhi Oct 2014 – Sep 2015"
+    else if (trimmed.includes('PG Diploma')) {
+      const pgDiplomaMatch = trimmed.match(/^(.+?)\s*–\s*PG\s+Diploma\s+in\s+(.+?)\s+([^,]+?)\s+([A-Z][a-z]+\s+\d{4})\s*[–—]\s*([A-Z][a-z]+\s+\d{4})$/)
+      if (pgDiplomaMatch) {
+        entry.institution = pgDiplomaMatch[1].trim()
+        entry.degree = 'PG Diploma'
+        entry.field = pgDiplomaMatch[2].trim()
+        entry.year = `${pgDiplomaMatch[4]} - ${pgDiplomaMatch[5]}`
+      }
+    }
+    // Pattern: "Regional College for Education, Research and Technology – B.Tech in Electrical Engineering Jaipur, Rajasthan Jun 2008 – Jun 2012"
+    else if (trimmed.includes('B.Tech')) {
+      const btechMatch = trimmed.match(/^(.+?)\s*–\s*B\.Tech\s+in\s+(.+?)\s+([^,]+?),\s*([^,]+?)\s+([A-Z][a-z]+\s+\d{4})\s*[–—]\s*([A-Z][a-z]+\s+\d{4})$/)
+      if (btechMatch) {
+        entry.institution = btechMatch[1].trim()
+        entry.degree = 'Bachelor of Technology'
+        entry.field = btechMatch[2].trim()
+        // Location is in btechMatch[3] and btechMatch[4], but we don't store it separately
+        entry.year = `${btechMatch[5]} - ${btechMatch[6]}`
+      }
+    }
+    // Fallback patterns for simpler formats
+    else if (trimmed.includes('B.Tech') || trimmed.includes('Bachelor of Technology')) {
+      entry.degree = 'Bachelor of Technology'
+      
+      // Try to extract field
+      const fieldMatch = trimmed.match(/in\s+(.+?)(?:\s+from|\s*,|\s*$)/i)
+      if (fieldMatch) {
+        entry.field = fieldMatch[1].trim()
+      } else {
+        entry.field = 'Engineering' // Default
+      }
+      
+      // Try to extract institution
+      const institutionMatch = trimmed.match(/^(.+?)\s*[–-]\s*/)
+      if (institutionMatch) {
+        entry.institution = institutionMatch[1].trim()
+      }
+      
+      // Extract year if present
+      const yearMatch = trimmed.match(/(\d{4})\s*[-–—]\s*(\d{4})/)
+      if (yearMatch) {
+        entry.year = `${yearMatch[1]}-${yearMatch[2]}`
+      }
+    }
+    
+    // Only add entry if we have essential information
+    if (entry.degree && (entry.field || entry.institution)) {
+      entries.push(entry)
+    }
+  }
+  
+  // Sort by education level (highest first)
+  return entries.sort((a, b) => {
+    const getEducationLevel = (degree: string) => {
+      if (degree.toLowerCase().includes('phd')) return 6
+      if (degree.toLowerCase().includes('post graduate') || degree.toLowerCase().includes('pg diploma')) return 5
+      if (degree.toLowerCase().includes('master')) return 4
+      if (degree.toLowerCase().includes('bachelor') || degree.toLowerCase().includes('b.tech')) return 3
+      if (degree.toLowerCase().includes('diploma')) return 2
+      return 1
+    }
+    return getEducationLevel(b.degree) - getEducationLevel(a.degree)
+  })
+}
+
 // Generic fallback parser
 export function parseEducationGeneric(educationText: string): NormalizedStudent['education'] {
   const entries: NormalizedStudent['education'] = []
@@ -1530,6 +1700,8 @@ export function normalizeEducationByStudent(educationText: string, studentName: 
     return parseEducationHarishankar(educationText)
   } else if (name.includes('amol')) {
     return parseEducationAmol(educationText)
+  } else if (name.includes('misal')) {
+    return parseEducationMisal(educationText)
   } else {
     return parseEducationGeneric(educationText)
   }
@@ -1566,6 +1738,8 @@ export function normalizeExperienceByStudent(experienceText: string, studentName
     return parseExperienceAmol(experienceText)
   } else if (name.includes('abhijeet')) {
     return parseExperienceAbhijeet(experienceText)
+  } else if (name.includes('misal')) {
+    return parseExperienceMisal(experienceText)
   } else {
     return parseExperienceGeneric(experienceText)
   }
