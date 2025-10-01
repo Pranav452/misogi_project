@@ -1,5 +1,5 @@
 import type { StudentData, NormalizedStudent } from './supabase'
-import { normalizeEducationByStudent, normalizeExperienceByStudent } from './individual-normalizers'
+import { normalizeEducationByStudent, normalizeExperienceByStudent, normalizeSkillsByStudent } from './individual-normalizers'
 
 /**
  * Comprehensive data normalization utilities for student data
@@ -506,7 +506,7 @@ export function normalizeStudentData(rawData: StudentData): NormalizedStudent {
     name: rawData.name.trim(),
     education: normalizeEducationByStudent(rawData.education, rawData.name),
     experience: normalizeExperienceByStudent(rawData.experience, rawData.name),
-    skills: normalizeSkills(rawData.skills),
+    skills: normalizeSkillsByStudent(rawData.skills, rawData.name),
     github: rawData.github?.trim() || '',
     deployed: rawData.deployed?.trim() || '',
     demo_video: rawData.demo_video?.trim() || '',
