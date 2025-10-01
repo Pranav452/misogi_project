@@ -1317,6 +1317,79 @@ export function parseEducationAmol(educationText: string): NormalizedStudent['ed
   return entries
 }
 
+export function parseExperienceAbhijeet(experienceText: string): NormalizedStudent['experience'] {
+  const entries: NormalizedStudent['experience'] = []
+  
+  // Split by double newlines to separate different experience entries
+  const sections = experienceText.split(/\n\n+/)
+  
+  for (const section of sections) {
+    if (!section.trim()) continue
+    
+    const lines = section.split('\n').filter(line => line.trim())
+    const entry: NormalizedStudent['experience'][0] = {
+      role: '',
+      company: '',
+      duration: '',
+      description: []
+    }
+    
+    // Pattern: "Blowhorn: Member of Technical Staff April 2022 – July 2025"
+    if (lines.length > 0) {
+      const firstLine = lines[0].trim()
+      
+      // Extract company, role, and duration from first line
+      // Pattern: "Company: Role Duration"
+      const companyRoleMatch = firstLine.match(/^([^:]+):\s*(.+?)\s+([A-Z][a-z]+\s+\d{4})\s*[–—]\s*([A-Z][a-z]+\s+\d{4})$/)
+      if (companyRoleMatch) {
+        entry.company = companyRoleMatch[1].trim()
+        entry.role = companyRoleMatch[2].trim()
+        entry.duration = `${companyRoleMatch[3]} - ${companyRoleMatch[4]}`
+      } else {
+        // Fallback: try simpler patterns
+        const simpleMatch = firstLine.match(/^([^:]+):\s*(.+?)\s+(.+)$/)
+        if (simpleMatch) {
+          entry.company = simpleMatch[1].trim()
+          entry.role = simpleMatch[2].trim()
+          entry.duration = simpleMatch[3].trim()
+        } else {
+          // If no colon found, try other patterns
+          const noColonMatch = firstLine.match(/^(.+?)\s+(.+?)\s+([A-Z][a-z]+\s+\d{4})\s*[–—]\s*([A-Z][a-z]+\s+\d{4})$/)
+          if (noColonMatch) {
+            entry.company = noColonMatch[1].trim()
+            entry.role = noColonMatch[2].trim()
+            entry.duration = `${noColonMatch[3]} - ${noColonMatch[4]}`
+          } else {
+            // Last resort: treat as role/company without duration
+            entry.role = firstLine.trim()
+          }
+        }
+      }
+    }
+    
+    // Collect bullet points and tech stack as descriptions
+    for (let i = 1; i < lines.length; i++) {
+      const line = lines[i].trim()
+      if (line.startsWith('•')) {
+        entry.description.push(line.replace(/^•\s*/, ''))
+      } else if (line.startsWith('Tech Stack:')) {
+        // Add tech stack as a description
+        entry.description.push(line)
+      } else if (line && !line.match(/^[A-Z][a-z]+\s+\d{4}/)) {
+        // Add other non-duration lines as descriptions
+        entry.description.push(line)
+      }
+    }
+    
+    // Only add entry if we have essential information
+    if (entry.role && entry.company) {
+      entries.push(entry)
+    }
+  }
+  
+  return entries
+}
+
 // Generic fallback parser
 export function parseEducationGeneric(educationText: string): NormalizedStudent['education'] {
   const entries: NormalizedStudent['education'] = []
@@ -1491,6 +1564,8 @@ export function normalizeExperienceByStudent(experienceText: string, studentName
     return parseExperienceLokesh(experienceText)
   } else if (name.includes('amol')) {
     return parseExperienceAmol(experienceText)
+  } else if (name.includes('abhijeet')) {
+    return parseExperienceAbhijeet(experienceText)
   } else {
     return parseExperienceGeneric(experienceText)
   }
