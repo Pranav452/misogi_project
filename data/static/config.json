@@ -1,0 +1,124 @@
+{
+  "companyLogo": [
+    {
+      "name": "Nikith Majeti",
+      "studentCode": "MAIE01_026",
+      "company": "Zoop",
+      "logo": "https://www.zoop.one/zooplogo.svg"
+    },
+    {
+      "name": "Henish Shah",
+      "studentCode": "MAIE01_082",
+      "company": "Golden Legand Leasing & Finance Ltd",
+      "logo":"data:image/png;base64,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"
+    },
+    {
+      "name": "LTATHAGATM",
+      "studentCode": "MAIE01_047",
+      "company": "NoBroker",
+      "logo":"https://assets.nobroker.in/static/img/logos/nb_logo_new_trans.svg"
+    },
+    {
+      "name": "Mohammad Mukhtar Mohsin",
+      "studentCode": "MAIE01_024",
+      "company": "MSG Global Solutions",
+      "logo": "https://www.msg-global.com/.imaging/default/dam/Allgemein/Unternehmen-logos/msg/logo_msg_global_RGB_490x165px.png/jcr:content.png"
+    },
+    {
+      "name": "Aditya Bindu Sebastian",
+      "studentCode": "MAIE01_023",
+      "company": "Masai School",
+      "logo": "https://coding-platform.s3.amazonaws.com/dev/lms/tickets/15ec3eb6-caa4-44ef-8035-9e1367850ecb/2BZYUS3sewKdOdXC.png"
+    },
+    {
+      "name": "Ram Jayanth Kumar Vajja",
+      "studentCode": "MAIE01_076",
+      "company": "Keka",
+      "logo": "https://d2w2i7rp1a0wob.cloudfront.net/static/images/logos/KekaLogoBlack.svg"    
+    },
+    {
+      "name": "GADDAM HARSHAVARDHAN REDDY",
+      "studentCode": "MAIE01_029",
+      "company": "Chimera Technologies",
+      "logo": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSYkOhetLyswBnycdjBfdr33NX2sAv7v0-Caw&s"
+    },
+    {
+      "name": "Sudhir",
+      "studentCode": "MAIE01_020",
+      "company": "Keka",
+      "logo": "https://d2w2i7rp1a0wob.cloudfront.net/static/images/logos/KekaLogoBlack.svg"    
+    },
+    {
+      "name": "Ravin Kumar Jangir",
+      "studentCode": "MAIE01_037",
+      "company": "Keka",
+      "logo": "https://d2w2i7rp1a0wob.cloudfront.net/static/images/logos/KekaLogoBlack.svg"
+    },
+    {
+      "name": "Ravishankar Kumar",
+      "studentCode": "MAIE01_055",
+      "company": "India Ventures",
+      "logo": "https://indiaaccelerator.co/_next/static/media/ia-logo-dark.c84905c7.png"
+    },
+    {
+      "name": "Saurabh kumar jha",
+      "studentCode": "MAIE01_019",
+      "company": "5C Network",
+      "logo": "https://www.5cnetwork.com/static/logo.png"
+    },
+    {
+      "name": "Gautam H",
+      "studentCode": "MAIE01_084",
+      "company": "Bandhoo",
+      "logo": "https://coding-platform.s3.amazonaws.com/dev/lms/tickets/1f884f3c-7b35-4df0-b13e-4cb0307095ea/GQxwVlCLktTzCkIf.png"
+    },
+    {
+      "name": "Kinjal Momaya",
+      "studentCode": "MAIE01_014",
+      "company": "5C Network",
+      "logo": "https://www.5cnetwork.com/static/logo.png"
+    },
+    {
+      "name": "Srinivasan H",
+      "studentCode": "MAIE01_069",
+      "company": "Ikites",
+      "logo": "https://static.wixstatic.com/media/c1e954_b56ad2201f1d41d5adaca0983906eb5f~mv2.png/v1/fill/w_340,h_170,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/Full_Logo_Light_Background-removebg-preview.png"
+    },
+    {
+      "name": "Shubham B Pawar",
+      "studentCode": "MAIE01_027",
+      "company": "Urban Piper",
+      "logo": "https://cdn.prod.website-files.com/62458251a5559067512bba0b/67f76f9dc2508463a514cf7b_footer-log-new.svg"
+    },
+    {
+      "name": "Kumar Sanu",
+      "studentCode": "MAIE01_021",
+      "company": "Masai School",
+      "logo": "https://coding-platform.s3.amazonaws.com/dev/lms/tickets/15ec3eb6-caa4-44ef-8035-9e1367850ecb/2BZYUS3sewKdOdXC.png"
+    },
+    {
+      "name": "Pratik Sontakke",
+      "studentCode": "MAIE01_070",
+      "company": "5C Network",
+      "logo": "https://www.5cnetwork.com/static/logo.png"
+    },
+    {
+      "name": "Hemant Acharya",
+      "studentCode": "MAIE01_077",
+      "company": "V Dart",
+      "logo": "https://www.vdart.com/wp-content/uploads/2020/02/vdart.svg"
+    },
+    {
+      "name": "Rasheed Ahmed",
+      "studentCode": "MAIE01_046",
+      "company": "Chimera Technologies",
+      "logo": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSYkOhetLyswBnycdjBfdr33NX2sAv7v0-Caw&s"
+    },
+    {
+      "name": "Ansuman Kumar",
+      "studentCode": "MAIE01_022",
+      "company": "Fabric HQ",
+      "logo": "https://coding-platform.s3.amazonaws.com/dev/lms/tickets/6582720f-5c00-4769-82a9-6a646c45b85a/3HuWX0SkxBqGvAvF.png"
+    }
+  ]
+}
